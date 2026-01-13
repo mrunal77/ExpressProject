@@ -8,6 +8,11 @@
   "servers": [
     { "url": "http://localhost:3000" }
   ],
+  "tags": [
+    { "name": "Auth", "description": "Authentication endpoints (register, login)" },
+    { "name": "Items", "description": "Item management (CRUD)" },
+    { "name": "Products", "description": "Product management (CRUD)" }
+  ],
   "components": {
     "securitySchemes": {
       "bearerAuth": {
@@ -42,12 +47,25 @@
           "createdAt": { "type": "string", "format": "date-time" },
           "updatedAt": { "type": "string", "format": "date-time" }
         }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "price": { "type": "number", "format": "float" },
+          "ownerId": { "type": "integer" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
       }
     }
   },
   "paths": {
     "/auth/register": {
       "post": {
+        "tags": ["Auth"],
         "summary": "Register a new user",
         "requestBody": {
           "required": true,
@@ -80,6 +98,7 @@
     },
     "/auth/login": {
       "post": {
+        "tags": ["Auth"],
         "summary": "Login",
         "requestBody": {
           "required": true,
@@ -111,6 +130,7 @@
     },
     "/items": {
       "get": {
+        "tags": ["Items"],
         "summary": "List items for the authenticated user",
         "security": [{ "bearerAuth": [] }],
         "responses": {
@@ -125,6 +145,7 @@
         }
       },
       "post": {
+        "tags": ["Items"],
         "summary": "Create an item",
         "security": [{ "bearerAuth": [] }],
         "requestBody": {
@@ -156,6 +177,7 @@
     },
     "/items/{id}": {
       "get": {
+        "tags": ["Items"],
         "summary": "Get an item",
         "security": [{ "bearerAuth": [] }],
         "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
@@ -172,6 +194,7 @@
         }
       },
       "put": {
+        "tags": ["Items"],
         "summary": "Update an item",
         "security": [{ "bearerAuth": [] }],
         "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
@@ -202,7 +225,150 @@
         }
       },
       "delete": {
+        "tags": ["Items"],
         "summary": "Delete an item",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": {
+          "204": { "description": "No Content" },
+          "404": { "description": "Not found" }
+        }
+      }
+    },
+    "/products": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "List products for the authenticated user",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Product" } }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Products"],
+        "summary": "Create a product",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "description": { "type": "string" },
+                  "price": { "type": "number", "format": "float" }
+                },
+                "required": ["name", "price"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Product" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Get a product",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Product" }
+              }
+            }
+          },
+          "404": { "description": "Not found" }
+        }
+      },
+      "put": {
+        "tags": ["Products"],
+        "summary": "Update a product",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "description": { "type": "string" },
+                  "price": { "type": "number", "format": "float" }
+                },
+                "required": ["name", "price"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Product" }
+              }
+            }
+          },
+          "404": { "description": "Not found" }
+        }
+      },
+      "patch": {
+        "tags": ["Products"],
+        "summary": "Patch a product",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "description": { "type": "string" },
+                  "price": { "type": "number", "format": "float" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Product" }
+              }
+            }
+          },
+          "404": { "description": "Not found" }
+        }
+      },
+      "delete": {
+        "tags": ["Products"],
+        "summary": "Delete a product",
         "security": [{ "bearerAuth": [] }],
         "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
         "responses": {

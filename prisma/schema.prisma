@@ -13,12 +13,24 @@ model User {
   password String
   name     String?
   items    Item[]
+  products Product[]
 }
 
 model Item {
   id          Int      @id @default(autoincrement())
   title       String
   description String?
+  ownerId     Int
+  owner       User     @relation(fields: [ownerId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  price       Float
   ownerId     Int
   owner       User     @relation(fields: [ownerId], references: [id])
   createdAt   DateTime @default(now())
